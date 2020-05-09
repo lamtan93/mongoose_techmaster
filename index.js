@@ -4,7 +4,10 @@ const {
     findUserById,
     findSomeUsers,
     updateUser,
-    deleteUserById
+    deleteUserById,
+    createSomeUsersAndPosts,
+    populateUsers,
+    populateBlogPosts
 } = require('./database/userController');
 
 //Inserer les users dans la base
@@ -25,4 +28,9 @@ insertUser('Corgi24', 24, 'corgi24@gmail.com');
 //findSomeUsers();
 
 //updateUser('5eb602297d32f636e479aec3', 'Corgi188',18,'Corgi188@gmail.com');
-deleteUserById('5eb602297d32f636e479aec3');
+//deleteUserById('5eb602297d32f636e479aec3');
+
+//createSomeUsersAndPosts();
+
+//populateUsers();
+populateBlogPosts();

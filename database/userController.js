@@ -1,4 +1,4 @@
-const {User} = require('./models'); 
+const {User, BlogPost} = require('./models'); 
 const {ObjectId} = require('mongoose').Types;
 
 const insertUser = async(name, age, email) => {
@@ -115,6 +115,113 @@ const deleteUserById = async (_id)=>{
     }
 }
 
+//Taọ 1 user, user này viết 5 bài posts.
+const createSomeUsersAndPosts = async()=>{
+    try {
+        let author1 = new User({
+            name: 'Victor Hugo',
+            age:  82,
+            email: 'VictoHugo@gmail.com',
+            blogPosts:  []
+        });
+        
+        //-------------1--------------
+        let blogPost1 = new BlogPost({
+            title: 'Les Misérables',
+            content: 'Les misérables de la terre se retrouve dans une maison heureuse',
+            date: Date.now(),
+            author: author1
+        });
+
+        await blogPost1.save();
+        await author1.blogPosts.push(blogPost1);
+        await author1.save();
+
+        //-------------2--------------
+        let blogPost2 = new BlogPost({
+            title: 'Apple Iphone 2017',
+            content: 'Présentation Iphone 2017',
+            date: Date.now(),
+            author: author1
+        });
+
+        await blogPost2.save();
+        await author1.blogPosts.push(blogPost2);
+        await author1.save();
+
+        //-------------3--------------
+        let blogPost3 = new BlogPost({
+            title: 'Apple Iphone 2018',
+            content: 'Présentation Iphone 2018',
+            date: Date.now(),
+            author: author1
+        });
+
+        await blogPost3.save();
+        await author1.blogPosts.push(blogPost3);
+        await author1.save();
+
+        //-------------4--------------
+        let blogPost4 = new BlogPost({
+            title: 'Apple Iphone 2019',
+            content: 'Présentation Iphone 2019',
+            date: Date.now(),
+            author: author1
+        });
+
+        await blogPost4.save();
+        await author1.blogPosts.push(blogPost4);
+        await author1.save();
+
+
+        console.log('[createSomeUsersAndPosts]create author1 OK');
+    } catch (error) {
+        console.log(`[createSomeUsersAndPosts]error: ${error}`)
+    }
+};
+
+//Case study: Hiện danh sách Users kèm chi tiết các bài BlogPosts
+//Cần Join 2 bảng user và blogpost
+const populateUsers = async ()=>{
+    try {
+        let findUsers = await User.find({
+            age: {$gte: 20}
+        },['name', 'age']).populate({
+            path: 'blogPosts', //afficher en détail le tableau blogPosts de User
+            select: ['title', 'content'], //N'affiche que les champs title et content
+            //Filter les résultats du tableau blogPosts de User
+            match: {content: /Iphone/i},
+            options: {limit: 2}
+        }).exec();
+
+        findUsers.forEach(user => {
+            console.log(`[populateUsers] OK: ${user}`);    
+        });
+        
+    } catch (error) {
+        console.log(`[populateUsers] error : ${error}`);
+    }
+};
+
+//BlogPosts -> User
+const populateBlogPosts = async ()=>{
+    try {
+          let blogPosts = await BlogPost.find(
+              {title: /Apple/i}, //Filter something
+              ['title', 'author']
+          ).populate({
+              path: 'author',
+              select: ['name', 'age'],
+          }).exec();
+
+          for (const b of blogPosts) {
+              console.log(`\n [populateBlogPosts] OK: ${b} \n`);
+          }
+    } catch (error) {
+        console.log(`[populateBlogPosts] error : ${error}`);
+    }
+};
+
 
 module.exports = {
     insertUser, 
@@ -122,5 +229,8 @@ module.exports = {
     findUserById,
     findSomeUsers,
     updateUser,
-    deleteUserById
+    deleteUserById,
+    createSomeUsersAndPosts,
+    populateUsers,
+    populateBlogPosts
 };

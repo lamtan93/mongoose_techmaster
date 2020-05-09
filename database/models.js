@@ -31,11 +31,26 @@ connectDb();
 const UserSchema = new mgo_schemas({
     name: {type: String, default: 'unknown'},
     age: {type: Number, min: 18, index: true},
-    email: {type: String, match: /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/}
-})
+    email: {type: String, match: /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/},
+
+    //Quan he giua 2 ban: User - BlogPost(1 - n)
+    blogPosts: [{type: mongoose.Schema.Types.ObjectId, ref: 'BlogPost'}]
+});
+
+//Schema BlogPost
+const BlogPostSchema = new mgo_schemas({
+    title: {type: String, default: 'Haha'},
+    content: {type: String, default: ''},
+    date: {type: Date, default: Date.now},
+    
+    //Quan he giua 2 ban: BlogPost - User (1 - 1)
+    author: {type: mongoose.Schema.Types.ObjectId, ref: 'User'}
+});
+
 
 //Schema -> Model (bean)
 const User = mongoose.model('User', UserSchema);
+const BlogPost = mongoose.model('BlogPost', BlogPostSchema);
 
 // Or: module.exports = {User};
-module.exports = {User}; 
+module.exports = {User, BlogPost}; 
