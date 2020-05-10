@@ -1,4 +1,4 @@
-const {User, BlogPost} = require('./models'); 
+const {User, BlogPost, Product, Comment} = require('./models'); 
 const {ObjectId} = require('mongoose').Types;
 
 const insertUser = async(name, age, email) => {
@@ -222,6 +222,53 @@ const populateBlogPosts = async ()=>{
     }
 };
 
+const populateComments = async () =>{
+    try {
+        //Get the user Victo_Hugo
+        let user_VictorHugo = await User.findById('5eb626a082d0f04dc04f2207');
+        
+        //userVictor ecrit un commentaire sur un BlogPost Les Miserables
+        let blogPost_miserables = await BlogPost.findById('5eb626a082d0f04dc04f2208');
+
+        //console.log(`user_VictorHugo: ${user_VictorHugo}
+        //           \n blogPost_miserables: ${blogPost_miserables}`);
+        
+        //Model.Create({}) -> method static != new Model().save()
+        //comment1 created by user_VictoHugo dans un blogPost_miserable
+        let comment1 = await Comment.create({
+            body: `It's a very interingting book`,
+            author: user_VictorHugo,
+            commentOn: blogPost_miserables,
+            onModel: 'BlogPost'
+        });
+
+        blogPost_miserables.comments.push(comment1);
+        await comment1.save();
+        await blogPost_miserables.save();
+
+        //comment2 created by user_VictoHugo dans un product_iphone
+        let product_iphone = await Product.create({
+            name: 'iphone 2019',
+            yearOfProduction: 2019,
+        });
+        let comment2 = await Comment.create({
+            body : 'A fanstatic iphone\'s 2019',
+            author: user_VictorHugo,
+            commentOn: product_iphone,
+            onModel: 'Product'
+        });
+
+        product_iphone.comments.push(comment2);
+        await comment2.save();
+        await product_iphone.save();
+        
+        console.log('[populateComments] Operation success');
+
+    } catch (error) {
+        console.log(`[populateComments] error : ${error}`);
+    }
+};
+
 
 module.exports = {
     insertUser, 
@@ -232,5 +279,6 @@ module.exports = {
     deleteUserById,
     createSomeUsersAndPosts,
     populateUsers,
-    populateBlogPosts
+    populateBlogPosts,
+    populateComments
 };

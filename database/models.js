@@ -44,13 +44,53 @@ const BlogPostSchema = new mgo_schemas({
     date: {type: Date, default: Date.now},
     
     //Quan he giua 2 ban: BlogPost - User (1 - 1)
-    author: {type: mongoose.Schema.Types.ObjectId, ref: 'User'}
+    author: {type: mongoose.Schema.Types.ObjectId, ref: 'User'},
+    comments: [{type: mongoose.Schema.Types.ObjectId, ref: 'Comment'}]
+
 });
+
+/*
+User -> Comments (1 - n)
+Comment -> User (1 - 1)
+
+BlogPost -> Comments (1-n)
+Product -> Comments (1-n)
+
+//Dynamic Ref:
+Comment -> BlogPost ou Product (1 - 1)
+
+*/
+//Shcema Product
+const ProductSchema = new mgo_schemas({
+    name: {type: String, default: ''},
+    yearOfProduction: {type: Number, min: 2000},
+    comments: [{type: mongoose.Schema.Types.ObjectId, ref: 'Comment'}]
+});
+
+//Schema Comment
+const CommentSchema = new mgo_schemas({
+    body: {type: String, require: true},
+    author: {type: mongoose.Schema.Types.ObjectId, ref: 'User'},
+    //Dynamic ref
+    commentOn: {
+        type: mongoose.Schema.Types.ObjectId,
+        require: true,
+        refPath: 'onModel'
+    },
+    onModel: {
+        type: String,
+        require: true,
+        enum: ['BlogPost', 'Product']
+    }
+})
+
 
 
 //Schema -> Model (bean)
 const User = mongoose.model('User', UserSchema);
 const BlogPost = mongoose.model('BlogPost', BlogPostSchema);
+const Product = mongoose.model('Product', ProductSchema);
+const Comment = mongoose.model('Comment', CommentSchema);
 
 // Or: module.exports = {User};
-module.exports = {User, BlogPost}; 
+module.exports = {User, BlogPost, Product, Comment}; 

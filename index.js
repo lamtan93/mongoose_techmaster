@@ -7,7 +7,8 @@ const {
     deleteUserById,
     createSomeUsersAndPosts,
     populateUsers,
-    populateBlogPosts
+    populateBlogPosts,
+    populateComments
 } = require('./database/userController');
 
 //Inserer les users dans la base
@@ -33,4 +34,5 @@ insertUser('Corgi24', 24, 'corgi24@gmail.com');
 //createSomeUsersAndPosts();
 
 //populateUsers();
-populateBlogPosts();
+//populateBlogPosts();
+populateComments();
